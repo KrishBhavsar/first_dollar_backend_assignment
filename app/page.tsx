@@ -44,14 +44,14 @@ export default function Home() {
         <form onSubmit={handleSubmit} className="mb-8">
           <div className="bg-white rounded-lg shadow-md p-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Ethereum Wallet Address
+              Wallet Address or Basename
             </label>
             <div className="flex gap-2">
               <input
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                placeholder="0x..."
+                placeholder="0x... or basename.base.eth"
                 className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
               />
               <button
@@ -78,16 +78,21 @@ export default function Home() {
                 {result.score}
               </div>
               <div className="text-gray-600">Overall Score</div>
+              {result.basename && (
+                <div className="mt-2 text-sm text-gray-500">
+                  Resolved from <span className="font-medium text-indigo-600">{result.basename}</span>
+                </div>
+              )}
               {result.flags?.insufficientData && (
                 <div className="mt-4 text-yellow-600">
                   ⚠️ Insufficient data for accurate scoring
                 </div>
               )}
-              {result.flags?.possibleBot && (
+              {/* {result.flags?.possibleBot && (
                 <div className="mt-4 text-orange-600">
                   🤖 Possible bot activity detected
                 </div>
-              )}
+              )} */}
             </div>
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold mb-4 text-black">

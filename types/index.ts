@@ -4,6 +4,7 @@ export interface ScoreRequest {
 
 export interface ScoreResponse {
   address: string;
+  basename?: string;
   score: number;
   breakdown: {
     activityConsistency: number;

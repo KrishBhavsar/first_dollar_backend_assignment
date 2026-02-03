@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { validateAddress } from "@/lib/utils/validation";
+import { validateInput, normalizeAddress } from "@/lib/utils/validation";
+import { resolveBasename } from "@/lib/blockchain/basename";
 import { alchemyClient } from "@/lib/blockchain/alchemy";
 import { scoreCache } from "@/lib/cache/cache";
 import { processTransactions, calculateScore } from "@/lib/scoring/calculator";
@@ -8,21 +9,40 @@ import { ScoreResponse } from "@/types";
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const address = searchParams.get("address");
+    const input = searchParams.get("address");
 
-    if (!address) {
+    if (!input) {
       return NextResponse.json(
         { error: "Missing address parameter" },
         { status: 400 },
       );
     }
 
-    const validation = validateAddress(address);
-    if (!validation.valid) {
+    const validation = validateInput(input);
+
+    if (validation.type === "invalid") {
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
 
-    const normalizedAddress = validation.normalized!;
+    let normalizedAddress: string;
+    let basename: string | undefined;
+
+    if (validation.type === "basename") {
+      // Resolve basename to address
+      const resolution = await resolveBasename(validation.normalized!);
+
+      if (!resolution.address) {
+        return NextResponse.json(
+          { error: resolution.error || "Failed to resolve basename" },
+          { status: 400 },
+        );
+      }
+
+      normalizedAddress = normalizeAddress(resolution.address);
+      basename = resolution.basename;
+    } else {
+      normalizedAddress = validation.normalized!;
+    }
 
     const cachedScore = scoreCache.get(normalizedAddress);
     if (cachedScore) {
@@ -54,6 +74,7 @@ export async function GET(request: NextRequest) {
 
     const response: ScoreResponse = {
       address: normalizedAddress,
+      ...(basename && { basename }),
       score,
       breakdown,
       stats: {
