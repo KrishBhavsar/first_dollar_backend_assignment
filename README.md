@@ -158,9 +158,12 @@ Wallets with fewer than 5 transactions receive a score of 0 with an `insufficien
 ```
 app/
   api/score/route.ts        API endpoint
+  layout.tsx                 Root layout
   page.tsx                   Frontend UI
 lib/
-  blockchain/alchemy.ts      Alchemy API client with pagination
+  blockchain/
+    alchemy.ts               Alchemy API client with pagination
+    basename.ts              Basename resolution to address
   cache/cache.ts             In-memory score cache
   scoring/
     calculator.ts            Transaction processing & score aggregation
