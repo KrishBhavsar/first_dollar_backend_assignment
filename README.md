@@ -1,6 +1,6 @@
 # Onchain Wallet Score API
 
-A backend service that accepts an Ethereum wallet address on **Base mainnet**, fetches its transaction history via **Alchemy**, and returns a numeric score (0-100) reflecting "real, engaged user" behavior.
+A backend service that accepts an Ethereum wallet address on **Base mainnet** or **Basename**, fetches its transaction history via **Alchemy**, and returns a numeric score (0-100) reflecting "real, engaged user" behavior.
 
 Built with **Next.js 16** (App Router) and **TypeScript**.
 
